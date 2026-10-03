@@ -71,24 +71,24 @@ footer a{color:var(--paper)}
 <div class="wrap">
   <header>
     <h1 class="brand serif">살만한것들</h1>
-    <p class="tag">살만한 것만 골라, 실제 사용 장면으로 보여드립니다. 영상 번호로 찾으세요.</p>
+    <p class="tag">살만한 것만 골라, 실제 사용 장면으로 보여드립니다. 영상 속 제품 이름으로 찾으세요.</p>
     <form class="find" id="find" role="search">
-      <label for="num">영상 번호</label>
-      <input id="num" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="영상 번호 입력 (예: 3)">
+      <label for="num">제품 이름</label>
+      <input id="num" autocomplete="off" placeholder="제품 이름 입력 (예: 칼갈이)">
       <button type="submit">찾기</button>
     </form>
     <p class="miss" id="miss" hidden></p>
-    <nav class="jump" aria-label="영상 번호"><a href="#003">#003 님봇 D11</a><a href="#002">#002 AccuSharp</a><a href="#001">#001 칼갈이 3종</a></nav>
+    <nav class="jump" aria-label="영상 속 제품"><a href="#003">님봇 D11</a><a href="#002">AccuSharp</a><a href="#001">칼갈이 3종</a></nav>
     <p class="ad">이 페이지는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다. 가격·리뷰 수는 영상 제작일 기준이며 바뀔 수 있어요.</p>
   </header>
 
   <section id="003">
     <div class="head">
       <div class="titles">
-        <span class="eyebrow">#003 · 2026-10-03<span class="new">NEW</span></span>
+        <span class="eyebrow">2026-10-03<span class="new">NEW</span></span>
         <h2 class="serif">3년 써도 멀쩡한 라벨기?</h2>
       </div>
-      <a class="cover" href="https://youtube.com/shorts/FHjQPbyeA7U" target="_blank" rel="noopener" aria-label="#003 영상 보기"><img src="img/003_cover.webp" alt="" loading="lazy"></a>
+      <a class="cover" href="https://youtube.com/shorts/FHjQPbyeA7U" target="_blank" rel="noopener" aria-label="님봇 D11 영상 보기"><img src="img/003_cover.webp" alt="" loading="lazy"></a>
     </div>
     <p class="verdict">결론 — <b>저렴하고 쓰기 쉬운 블루투스 라벨기예요. 열에 약한 감열 라벨이라는 점만 감안하면 돼요.</b></p>
     <div class="items">
@@ -108,10 +108,10 @@ footer a{color:var(--paper)}
   <section id="002">
     <div class="head">
       <div class="titles">
-        <span class="eyebrow">#002 · 2026-10-03</span>
+        <span class="eyebrow">2026-10-03</span>
         <h2 class="serif">종이도 못 자르던 칼, 3번 당기면</h2>
       </div>
-      <a class="cover" href="https://youtube.com/shorts/7EfYmJDFXDI" target="_blank" rel="noopener" aria-label="#002 영상 보기"><img src="img/002_cover.webp" alt="" loading="lazy"></a>
+      <a class="cover" href="https://youtube.com/shorts/7EfYmJDFXDI" target="_blank" rel="noopener" aria-label="AccuSharp 영상 보기"><img src="img/002_cover.webp" alt="" loading="lazy"></a>
     </div>
     <p class="verdict">결론 — <b>가볍고 톱니칼까지 되는 휴대용, 세게 누르지만 않으면 OK</b></p>
     <div class="items">
@@ -131,10 +131,10 @@ footer a{color:var(--paper)}
   <section id="001">
     <div class="head">
       <div class="titles">
-        <span class="eyebrow">#001 · 2026-10-03</span>
+        <span class="eyebrow">2026-10-03</span>
         <h2 class="serif">칼갈이 6천 원 vs 4만 원</h2>
       </div>
-      <a class="cover" href="https://youtube.com/shorts/vzQXkZmJ3Kg" target="_blank" rel="noopener" aria-label="#001 영상 보기"><img src="img/001_cover.webp" alt="" loading="lazy"></a>
+      <a class="cover" href="https://youtube.com/shorts/vzQXkZmJ3Kg" target="_blank" rel="noopener" aria-label="칼갈이 3종 영상 보기"><img src="img/001_cover.webp" alt="" loading="lazy"></a>
     </div>
     <p class="verdict">결론 — <b>가끔 쓰면 6천 원짜리로 충분, 전동은 편해서 사는 것</b></p>
     <div class="items">
@@ -181,9 +181,16 @@ footer a{color:var(--paper)}
 (function(){
   var f=document.getElementById('find'), n=document.getElementById('num'), miss=document.getElementById('miss');
   function go(v){
-    var d=(v||'').replace(/[^0-9]/g,''); if(!d) return;
-    var id=('000'+parseInt(d,10)).slice(-3), el=document.getElementById(id);
-    if(!el){ miss.textContent='#'+id+' 영상은 아직 없어요. 최신 영상부터 보여드릴게요.'; miss.hidden=false; return; }
+    v=(v||'').trim(); if(!v) return;
+    var el=null, d=v.replace(/[^0-9]/g,'');
+    if(d && d.length===v.replace(/[#\s번]/g,'').length){ el=document.getElementById(('000'+parseInt(d,10)).slice(-3)); }
+    else {  // 제품 이름(일부만 입력해도)으로 찾기
+      var k=v.replace(/\s/g,'').toLowerCase();
+      var cards=[].slice.call(document.querySelectorAll('[id]')).filter(function(x){return /^\d{3}$/.test(x.id);});
+      for(var i=0;i<cards.length;i++){ if(cards[i].textContent.replace(/\s/g,'').toLowerCase().indexOf(k)>=0){ el=cards[i]; break; } }
+    }
+    if(!el){ miss.textContent='"'+v+'" 제품을 찾지 못했어요. 최신 영상부터 보여드릴게요.'; miss.hidden=false; return; }
+    var id=el.id;
     miss.hidden=true; el.scrollIntoView({behavior:'smooth',block:'start'});
     el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit');
     history.replaceState(null,'','#'+id);
